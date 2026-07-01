@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useRef, useCallback } from 'react';
 import { motion } from 'framer-motion';
@@ -15,7 +15,7 @@ const COLORS = ['#FF5A70', '#FFD36A', '#61D99B'];
 export default function ShareCard({ result, input, onClose }: ShareCardProps) {
   const cardRef = useRef<HTMLDivElement>(null);
 
-  const handleCopyImage = useCallback(async () => {
+  const handleDownloadImage = useCallback(async () => {
     if (!cardRef.current) return;
 
     try {
@@ -26,19 +26,16 @@ export default function ShareCard({ result, input, onClose }: ShareCardProps) {
       });
 
       if (blob) {
-        await navigator.clipboard.write([
-          new ClipboardItem({ 'image/png': blob }),
-        ]);
-        alert('分享卡片已复制到剪贴板');
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'prism-result.png';
+        a.click();
+        URL.revokeObjectURL(url);
       }
     } catch (err) {
-      console.error('Copy image failed:', err);
-      const expText = result.next_experiment
-        ? (typeof result.next_experiment === 'string' ? result.next_experiment : result.next_experiment.design)
-        : (result.experiment || '');
-      const text = `我用多棱镜重新理解了一件事：\n\n"${input.slice(0, 50)}..."\n\n${result.models.length}种解释角度\n下一步实验：${expText.slice(0, 60)}...`;
-      await navigator.clipboard.writeText(text);
-      alert('已复制文本摘要到剪贴板');
+      console.error('Download image failed:', err);
+      await handleCopyText();
     }
   }, [result, input]);
 
@@ -95,7 +92,7 @@ export default function ShareCard({ result, input, onClose }: ShareCardProps) {
         </div>
 
         <div className="mt-4 flex gap-3">
-          <button onClick={handleCopyImage} className="analysis-primary-button flex-1">复制图片</button>
+          <button onClick={handleDownloadImage} className="analysis-primary-button flex-1">保存图片</button>
           <button onClick={handleCopyText} className="analysis-ghost-button flex-1">复制文本</button>
           <button onClick={onClose} className="analysis-ghost-button px-4">关闭</button>
         </div>
