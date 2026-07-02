@@ -1,6 +1,5 @@
 import type { Metadata } from 'next';
 import './globals.css';
-import AnalyticsTracker from '@/components/AnalyticsTracker';
 
 export const metadata: Metadata = {
   title: '多棱镜 · 人生事件解释系统',
@@ -16,10 +15,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body className="min-h-screen">
-        <AnalyticsTracker />
-        {children}
-      </body>
+      <body className="min-h-screen">{children}</body>
     </html>
   );
 }
