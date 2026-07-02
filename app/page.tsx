@@ -11,6 +11,8 @@ import ShareCard from '@/components/ShareCard';
 import PrismScene from '@/components/PrismScene';
 import StarryBackground from '@/components/StarryBackground';
 import SiteNav from '@/components/SiteNav';
+import { FeedbackLink } from '@/components/FeedbackButton';
+import FeedbackButton from '@/components/FeedbackButton';
 import { AnalysisResult } from '@/lib/types';
 import { saveEntry } from '@/lib/history';
 
@@ -367,6 +369,7 @@ export default function Home() {
                       {isLoading ? '重新解释中...' : '重新解释'}
                     </motion.button>
                     <button onClick={() => setShowShare(true)} className="analysis-ghost-button">分享</button>
+                    <FeedbackButton />
                   </motion.div>
                 </motion.aside>
 
@@ -448,7 +451,12 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <footer className="w-full py-4 text-center relative z-20" />
+      <footer className="relative z-20 w-full border-t border-white/04 bg-[#030510]/60 py-5 text-center backdrop-blur-sm">
+        <div className="mx-auto flex max-w-6xl items-center justify-center gap-5 px-4">
+          <span className="text-[11px] tracking-[0.1em] text-white/16">多棱镜 · 人生事件解释系统</span>
+          <FeedbackButton />
+        </div>
+      </footer>
     </main>
   );
 }
