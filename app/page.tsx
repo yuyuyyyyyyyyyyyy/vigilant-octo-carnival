@@ -360,11 +360,9 @@ export default function Home() {
                   >
                     <button onClick={handleReset} className="analysis-ghost-button">重新输入</button>
                     <motion.button
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
                       onClick={handleReInterpret}
                       disabled={isLoading}
-                      className="analysis-primary-button disabled:opacity-30 disabled:cursor-not-allowed"
+                      className="analysis-ghost-button disabled:opacity-30 disabled:cursor-not-allowed"
                     >
                       {isLoading ? '重新解释中...' : '重新解释'}
                     </motion.button>

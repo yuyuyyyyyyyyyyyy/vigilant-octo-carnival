@@ -53,7 +53,7 @@ function FeedbackModalInner({
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[99999] flex items-center justify-center p-4"
-          style={{ background: 'rgba(2,4,8,0.65)', backdropFilter: 'blur(14px)' }}
+          style={{ background: 'rgba(2,4,10,0.78)', backdropFilter: 'blur(16px)' }}
           onClick={() => onOpenChange(false)}
         >
           <motion.div
@@ -61,7 +61,7 @@ function FeedbackModalInner({
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 16, scale: 0.97 }}
             transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            className="w-full max-w-md rounded-2xl border border-white/[0.07] bg-[#0A0E1A]/96 p-7 shadow-[0_32px_100px_rgba(0,0,0,0.65)]"
+            className="w-full max-w-md rounded-2xl border border-white/[0.12] bg-[#111725]/98 p-7 shadow-[0_32px_100px_rgba(0,0,0,0.75)]"
             onClick={e => e.stopPropagation()}
           >
             {done ? (
@@ -73,13 +73,13 @@ function FeedbackModalInner({
                 >
                   ✓
                 </motion.div>
-                <p className="text-sm text-white/50">已收到，谢谢</p>
+                <p className="text-sm text-white/70">已收到，谢谢</p>
               </div>
             ) : (
               <>
-                <p className="text-[9px] font-mono tracking-[0.28em] text-white/14">FEEDBACK</p>
-                <h3 className="mt-1.5 text-base font-medium text-white/65">说点什么</h3>
-                <p className="mt-0.5 text-[11px] leading-5 text-white/22">
+                <p className="text-[9px] font-mono tracking-[0.28em] text-white/30">FEEDBACK</p>
+                <h3 className="mt-1.5 text-base font-medium text-white/85">说点什么</h3>
+                <p className="mt-0.5 text-[11px] leading-5 text-white/45">
                   Bug、想法、用得不爽的地方，都可以。
                 </p>
 
@@ -94,9 +94,9 @@ function FeedbackModalInner({
                       onClick={() => setType(key as 'bug' | 'idea' | 'other')}
                       className="rounded-lg border px-3 py-1.5 text-[11px] transition-all"
                       style={{
-                        borderColor: type === key ? 'rgba(99,102,241,0.3)' : 'rgba(255,255,255,0.05)',
-                        background: type === key ? 'rgba(99,102,241,0.08)' : 'transparent',
-                        color: type === key ? 'rgba(255,255,255,0.65)' : 'rgba(255,255,255,0.25)',
+                        borderColor: type === key ? 'rgba(99,102,241,0.45)' : 'rgba(255,255,255,0.10)',
+                        background: type === key ? 'rgba(99,102,241,0.12)' : 'rgba(255,255,255,0.02)',
+                        color: type === key ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.45)',
                       }}
                     >
                       {label}
@@ -109,20 +109,20 @@ function FeedbackModalInner({
                   onChange={e => setText(e.target.value)}
                   placeholder="说说看…"
                   rows={3}
-                  className="mt-4 w-full rounded-xl border border-white/[0.05] bg-white/[0.02] p-3.5 text-sm text-white/55 placeholder:text-white/10 focus:border-white/12 focus:outline-none resize-none"
+                  className="mt-4 w-full rounded-xl border border-white/[0.10] bg-white/[0.04] p-3.5 text-sm text-white/70 placeholder:text-white/25 focus:border-white/20 focus:outline-none resize-none"
                 />
 
                 <div className="mt-5 flex justify-end gap-2.5">
                   <button
                     onClick={() => onOpenChange(false)}
-                    className="rounded-xl px-4 py-2 text-[11px] text-white/25 transition-colors hover:text-white/45"
+                    className="rounded-xl px-4 py-2 text-[11px] text-white/45 transition-colors hover:text-white/70"
                   >
                     取消
                   </button>
                   <button
                     onClick={handleSend}
                     disabled={!text.trim() || sending}
-                    className="rounded-xl bg-indigo-500/15 px-5 py-2 text-[11px] font-medium text-white/55 transition-all hover:bg-indigo-500/22 disabled:opacity-25 disabled:cursor-not-allowed"
+                    className="rounded-xl bg-indigo-500/25 px-5 py-2 text-[11px] font-medium text-white/75 transition-all hover:bg-indigo-500/35 disabled:opacity-25 disabled:cursor-not-allowed"
                   >
                     {sending ? '发送中…' : '发送'}
                   </button>
