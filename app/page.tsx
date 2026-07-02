@@ -451,9 +451,7 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <footer className="w-full py-3 text-center">
-        <span className="text-[10px] tracking-[0.12em] text-white/10">多棱镜</span>
-        <span className="mx-2 text-white/06">·</span>
+      <footer className="w-full py-4 text-center">
         <FeedbackLink />
       </footer>
     </main>

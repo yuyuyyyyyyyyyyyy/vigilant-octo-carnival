@@ -144,7 +144,7 @@ export function FeedbackLink() {
     <>
       <button
         onClick={() => setOpen(true)}
-        className="text-[10px] tracking-[0.12em] text-white/12 transition-colors hover:text-white/35"
+        className="text-[11px] tracking-[0.12em] text-white/22 transition-colors hover:text-white/55"
       >
         反馈
       </button>
