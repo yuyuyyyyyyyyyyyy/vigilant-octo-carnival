@@ -37,8 +37,8 @@ export async function POST(request: NextRequest) {
 
     await fetch(API, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ title, desp }),
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({ title, desp }),
     });
 
     return NextResponse.json({ ok: true });

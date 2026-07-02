@@ -12,17 +12,17 @@ export async function POST(request: Request) {
   const typeLabel = { bug: '🐛 Bug', idea: '💡 想法', other: '💬 其他' }[type] || '💬 其他';
   const now = new Date().toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' });
 
-  const url =
-    'https://sctapi.ftqq.com/SCT373529TVlkxZBBkZ4VOgW1CxkUMQFm7' +
-    '?title=' + encodeURIComponent(`多棱镜 · 用户反馈`) +
-    '&desp=' + encodeURIComponent(
-      `**类型**：<span style="color:#6366f1">${typeLabel}</span>\n\n` +
-      `**内容**：\n${text.trim()}\n\n` +
-      `**时间**：${now}`
-    );
+  const url = 'https://sctapi.ftqq.com/SCT373529TVlkxZBBkZ4VOgW1CxkUMQFm7.send';
 
   try {
-    await fetch(url, { method: 'POST' });
+    await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        title: '多棱镜 · 用户反馈',
+        desp: `**类型**：<span style="color:#6366f1">${typeLabel}</span>\n\n**内容**：\n${text.trim()}\n\n**时间**：${now}`,
+      }),
+    });
     return Response.json({ ok: true });
   } catch {
     return Response.json({ ok: false, error: '发送失败' }, { status: 500 });
