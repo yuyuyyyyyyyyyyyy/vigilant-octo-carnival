@@ -451,11 +451,10 @@ export default function Home() {
         )}
       </AnimatePresence>
 
-      <footer className="relative z-20 w-full border-t border-white/04 bg-[#030510]/60 py-5 text-center backdrop-blur-sm">
-        <div className="mx-auto flex max-w-6xl items-center justify-center gap-5 px-4">
-          <span className="text-[11px] tracking-[0.1em] text-white/16">多棱镜 · 人生事件解释系统</span>
-          <FeedbackButton />
-        </div>
+      <footer className="w-full py-3 text-center">
+        <span className="text-[10px] tracking-[0.12em] text-white/10">多棱镜</span>
+        <span className="mx-2 text-white/06">·</span>
+        <FeedbackLink />
       </footer>
     </main>
   );
