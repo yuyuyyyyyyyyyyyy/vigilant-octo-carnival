@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -8,6 +8,7 @@ const links = [
   { href: '/method', label: '方法' },
   { href: '/examples', label: '样例' },
   { href: '/history', label: '历史' },
+  { href: '/profile', label: '档案' },
 ];
 
 export default function SiteNav() {

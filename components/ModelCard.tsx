@@ -10,10 +10,21 @@ interface ModelCardProps {
 
 const STRIP_COLORS = ['#FF5A70', '#FFD36A', '#61D99B', '#62A8FF'];
 
+function DetailBlock({ label, children }: { label: string; children?: string }) {
+  if (!children) return null;
+  return (
+    <div className="rounded-[14px] border border-white/[0.055] bg-white/[0.018] p-3">
+      <p className="text-[10px] font-mono tracking-[0.16em] text-white/18">{label}</p>
+      <p className="mt-1.5 text-xs leading-6 text-white/38">{children}</p>
+    </div>
+  );
+}
+
 export default function ModelCard({ model, index }: ModelCardProps) {
   const color = STRIP_COLORS[index % STRIP_COLORS.length];
   const content = model.content || model.logic || model.explanation || '';
   const score = typeof model.score === 'number' ? Math.max(1, Math.min(5, model.score)) : 3;
+  const hasStructuredDetails = Boolean(model.fact || model.inference || model.why || model.validation || model.falsification || model.limitation || model.evidence_quote);
 
   return (
     <motion.article
@@ -29,7 +40,7 @@ export default function ModelCard({ model, index }: ModelCardProps) {
         <div className="min-w-0">
           <p className="flex items-center gap-2 text-[10px] font-mono tracking-[0.2em] text-white/22">
             <span className="h-2 w-2 rounded-full" style={{ background: color, boxShadow: `0 0 10px ${color}66` }} />
-            视角 {String(index + 1).padStart(2, '0')}
+            解释 {String(index + 1).padStart(2, '0')}
           </p>
           <h3 className="mt-2 text-lg font-normal leading-snug text-white/82">{model.name}</h3>
           {(model.approach || model.dimension) && (
@@ -41,7 +52,24 @@ export default function ModelCard({ model, index }: ModelCardProps) {
         </div>
       </div>
 
-      <p className="relative mt-5 text-sm leading-7 text-white/54">{content}</p>
+      <p className="relative mt-5 text-sm leading-7 text-white/56">{content}</p>
+
+      {model.evidence_quote && (
+        <p className="relative mt-4 border-l border-white/[0.12] pl-3 text-xs leading-6 text-white/34">
+          输入依据：{model.evidence_quote}
+        </p>
+      )}
+
+      {hasStructuredDetails && (
+        <div className="relative mt-5 grid gap-2 sm:grid-cols-2">
+          <DetailBlock label="事实" >{model.fact}</DetailBlock>
+          <DetailBlock label="推测" >{model.inference}</DetailBlock>
+          <DetailBlock label="为什么" >{model.why}</DetailBlock>
+          <DetailBlock label="如何验证" >{model.validation}</DetailBlock>
+          <DetailBlock label="不成立时" >{model.falsification}</DetailBlock>
+          <DetailBlock label="模型局限" >{model.limitation}</DetailBlock>
+        </div>
+      )}
 
       <div className="relative mt-5 h-1.5 overflow-hidden rounded-full bg-white/[0.045]">
         <motion.div
@@ -53,7 +81,7 @@ export default function ModelCard({ model, index }: ModelCardProps) {
         />
       </div>
 
-      {model.scope && (
+      {model.scope && !model.limitation && (
         <p className="relative mt-4 border-t border-white/[0.055] pt-4 text-[11px] leading-5 text-white/24">
           适用范围：{model.scope}
         </p>

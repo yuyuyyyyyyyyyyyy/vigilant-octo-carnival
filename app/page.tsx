@@ -1,6 +1,6 @@
-'use client';
+﻿'use client';
 
-import { useState, useCallback, useLayoutEffect } from 'react';
+import { useState, useCallback, useEffect, useLayoutEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Header from '@/components/Header';
 import EventInput from '@/components/EventInput';
@@ -17,6 +17,16 @@ import { AnalysisResult } from '@/lib/types';
 import { saveEntry } from '@/lib/history';
 
 interface Pt { x: number; y: number; }
+
+function readLocalProfile() {
+  if (typeof window === 'undefined') return undefined;
+  try {
+    const raw = localStorage.getItem('prism-local-profile');
+    return raw ? JSON.parse(raw) : undefined;
+  } catch {
+    return undefined;
+  }
+}
 
 function useCardLayout() {
   const [card, setCard] = useState({ x: 0, y: 0, w: 760, h: 260 });
@@ -133,7 +143,7 @@ export default function Home() {
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ input: text, version: 1 }),
+        body: JSON.stringify({ input: text, version: 1, profile: readLocalProfile() }),
       });
 
       const data = await response.json();
@@ -160,7 +170,7 @@ export default function Home() {
       const response = await fetch('/api/analyze', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ input, version: nextVersion }),
+        body: JSON.stringify({ input, version: nextVersion, profile: readLocalProfile() }),
       });
 
       const data = await response.json();
@@ -175,6 +185,34 @@ export default function Home() {
     }
   }, [input, result]);
 
+  const handleReInterpretWithInput = useCallback(async (text: string, prevResult: AnalysisResult) => {
+    setInput(text);
+    setDraftInput(text);
+    setPreviousResult(prevResult);
+    setIsLoading(true);
+    setError('');
+
+    const nextVersion = (prevResult.version || 1) + 1;
+
+    try {
+      const response = await fetch('/api/analyze', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ input: text, version: nextVersion, profile: readLocalProfile() }),
+      });
+
+      const data = await response.json();
+      if (data.success) {
+        setResult(data.data);
+        saveEntry(text, data.data);
+      } else setError(data.error || '重新解释失败');
+    } catch (err) {
+      setError('网络错误，请检查连接后重试');
+    } finally {
+      setIsLoading(false);
+    }
+  }, []);
+
   const handleReset = useCallback(() => {
     setInput('');
     setDraftInput('');
@@ -183,6 +221,30 @@ export default function Home() {
     setError('');
     setShowShare(false);
   }, []);
+
+  useEffect(() => {
+    const revisitRaw = sessionStorage.getItem('prism-revisit-entry');
+    const reanalyzeRaw = sessionStorage.getItem('prism-reanalyze-entry');
+    sessionStorage.removeItem('prism-revisit-entry');
+    sessionStorage.removeItem('prism-reanalyze-entry');
+
+    const raw = reanalyzeRaw || revisitRaw;
+    if (!raw) return;
+
+    try {
+      const entry = JSON.parse(raw) as { input?: string; result?: AnalysisResult };
+      if (!entry.input || !entry.result) return;
+      if (reanalyzeRaw) handleReInterpretWithInput(entry.input, entry.result);
+      else {
+        setInput(entry.input);
+        setDraftInput(entry.input);
+        setResult(entry.result);
+        setPreviousResult(null);
+      }
+    } catch {
+      // Ignore stale or malformed history handoff data.
+    }
+  }, [handleReInterpretWithInput]);
 
   const hasResult = !!result;
 
@@ -316,9 +378,17 @@ export default function Home() {
                   )}
 
                   <div className="premium-panel relative mt-8 p-5">
-                    <p className="text-[10px] font-mono tracking-[0.18em] text-white/16">事件信号{result.event_type ? ` · ${result.event_type}` : ''}</p>
-                    <p className="mt-3 text-base sm:text-lg leading-8 text-white/62 italic">&ldquo;{result.event_reconstruction || result.event_summary}&rdquo;</p>
+                    <p className="text-[10px] font-mono tracking-[0.18em] text-white/16">现象{result.event_type ? ` · ${result.event_type}` : ''}</p>
+                    <p className="mt-3 text-base sm:text-lg leading-8 text-white/62 italic">&ldquo;{result.phenomenon || result.event_reconstruction || result.event_summary}&rdquo;</p>
                   </div>
+
+                  {(result.conflict || result.core_question) && (
+                    <div className="premium-panel relative mt-5 p-5">
+                      <p className="text-[10px] font-mono tracking-[0.18em] text-white/16">真正的问题</p>
+                      {result.conflict && <p className="mt-3 text-sm leading-7 text-white/48">{result.conflict}</p>}
+                      {result.core_question && <p className="mt-3 border-l border-white/[0.1] pl-3 text-xs leading-6 text-white/32">{result.core_question}</p>}
+                    </div>
+                  )}
 
                   {result.facts && result.facts.length > 0 && (
                     <div className="premium-panel relative mt-5 p-5">
@@ -371,12 +441,12 @@ export default function Home() {
                   </motion.div>
                 </motion.aside>
 
-                <div className="space-y-5">
+                <div className="relative space-y-5">
                   <motion.div
-                    initial={{ opacity: 0, y: 18 }}
+                    initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.5, delay: 0.16 }}
-                    className="px-1"
+                    className="pointer-events-none absolute -top-7 left-1 px-1"
                   >
                     <p className="panel-kicker">多种视角</p>
                   </motion.div>

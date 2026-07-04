@@ -1,4 +1,4 @@
-import { SYSTEM_PROMPT, USER_PROMPT_TEMPLATE } from './prompt';
+﻿import { SYSTEM_PROMPT, USER_PROMPT_TEMPLATE, AnalysisProfile } from './prompt';
 import { AnalysisResult } from './types';
 
 // === LLM 调用层 ===
@@ -20,7 +20,7 @@ function getConfig(): LLMConfig | null {
   return { apiKey, baseUrl, model };
 }
 
-async function callRealLLM(input: string, version: number, config: LLMConfig): Promise<string> {
+async function callRealLLM(input: string, version: number, config: LLMConfig, profile?: AnalysisProfile): Promise<string> {
   const response = await fetch(`${config.baseUrl}/chat/completions`, {
     method: 'POST',
     headers: {
@@ -31,10 +31,10 @@ async function callRealLLM(input: string, version: number, config: LLMConfig): P
       model: config.model,
       messages: [
         { role: 'system', content: SYSTEM_PROMPT },
-        { role: 'user', content: USER_PROMPT_TEMPLATE(input, version) },
+        { role: 'user', content: USER_PROMPT_TEMPLATE(input, version, profile) },
       ],
       temperature: version === 1 ? 0.7 : Math.min(0.8 + (version - 2) * 0.05, 1.0),
-      max_tokens: 2000,
+      max_tokens: 3600,
     }),
   });
 
@@ -229,29 +229,41 @@ function generateExperiment(version: number) {
 
 // === 主入口 ===
 
-export async function analyze(input: string, version: number = 1): Promise<AnalysisResult> {
+export async function analyze(input: string, version: number = 1, profile?: AnalysisProfile): Promise<AnalysisResult> {
   const config = getConfig();
 
   if (config) {
     // 真实 LLM 调用
     try {
-      const raw = await callRealLLM(input, version, config);
+      const raw = await callRealLLM(input, version, config, profile);
       const cleaned = raw.replace(/```json\n?/g, '').replace(/```\n?/g, '').trim();
       const parsed = JSON.parse(cleaned);
 
       return {
+        video_first_frame: parsed.video_first_frame || '',
+        phenomenon: parsed.phenomenon || parsed.event_reconstruction || '',
+        conflict: parsed.conflict || '',
+        core_question: parsed.core_question || '',
+        takeaway: parsed.takeaway || '',
         event_type: parsed.event_type || '',
-        event_reconstruction: parsed.event_reconstruction || '',
-        event_summary: parsed.event_summary || parsed.event_reconstruction || '',
+        event_reconstruction: parsed.event_reconstruction || parsed.phenomenon || '',
+        event_summary: parsed.event_summary || parsed.event_reconstruction || parsed.phenomenon || '',
         facts: parsed.facts || [],
-        models: parsed.models.map((m: any) => ({
-          name: m.name,
+        models: (parsed.models || []).map((m: any) => ({
+          name: m.name || '未命名解释',
           dimension: m.dimension || '',
           approach: m.approach || m.dimension || '',
           content: m.content || '',
           explanation: m.explanation || m.content || '',
           logic: m.logic || '',
-          scope: m.scope || '',
+          evidence_quote: m.evidence_quote || '',
+          fact: m.fact || '',
+          inference: m.inference || '',
+          why: m.why || '',
+          validation: m.validation || '',
+          falsification: m.falsification || '',
+          limitation: m.limitation || '',
+          scope: m.scope || m.limitation || '',
           score: Math.min(5, Math.max(1, m.score || 3)),
         })),
         variables: parsed.variables || [],

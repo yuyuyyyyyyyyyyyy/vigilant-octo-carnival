@@ -1,10 +1,10 @@
-import { NextRequest, NextResponse } from 'next/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
 import { analyze } from '@/lib/llm';
 
 export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
-    const { input, version = 1 } = body;
+    const { input, version = 1, profile } = body;
 
     // 输入验证
     if (!input || typeof input !== 'string') {
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest) {
     }
 
     // 调用分析引擎
-    const result = await analyze(input.trim(), version);
+    const result = await analyze(input.trim(), version, profile);
 
     return NextResponse.json({
       success: true,

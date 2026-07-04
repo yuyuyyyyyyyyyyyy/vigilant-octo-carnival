@@ -1,13 +1,20 @@
-// === 数据结构 v2 ===
+﻿// === 数据结构 v3 ===
 
 export interface InterpretationModel {
   name: string;
   dimension?: string;
   content?: string;
-  explanation?: string;   // 旧格式兼容
+  explanation?: string;
   logic?: string;
-  approach?: string;       // 旧格式兼容
+  approach?: string;
   scope?: string;
+  evidence_quote?: string;
+  fact?: string;
+  inference?: string;
+  why?: string;
+  validation?: string;
+  falsification?: string;
+  limitation?: string;
   score: number; // 1-5
 }
 
@@ -46,16 +53,21 @@ export interface NextExperiment {
 }
 
 export interface AnalysisResult {
+  video_first_frame?: string;
+  phenomenon?: string;
+  conflict?: string;
+  core_question?: string;
+  takeaway?: string;
   event_reconstruction?: string;
   event_summary?: string;
   event_type?: string;
   facts?: string[];
   models: InterpretationModel[];
-  variables?: any;          // backward compat
+  variables?: any;
   categorized_variables?: CategorizedVariables;
-  key_variables?: string[]; // backward compat
+  key_variables?: string[];
   conflict_analysis?: ConflictAnalysis;
-  experiment?: string;       // backward compat
+  experiment?: string;
   next_experiment?: NextExperiment | string;
   version: number;
   created_at: string;
@@ -64,6 +76,11 @@ export interface AnalysisResult {
 export interface AnalyzeRequest {
   input: string;
   version?: number;
+  profile?: {
+    name?: string;
+    lens?: string;
+    tone?: string;
+  };
 }
 
 export interface AnalyzeResponse {
