@@ -265,6 +265,8 @@ export async function analyze(input: string, version: number = 1, profile?: Anal
           limitation: m.limitation || '',
           scope: m.scope || m.limitation || '',
           score: Math.min(5, Math.max(1, m.score || 3)),
+          mechanism: m.mechanism || '',
+          difference_from_others: m.difference_from_others || '',
         })),
         variables: parsed.variables || [],
         key_variables: parsed.key_variables || [],
@@ -274,6 +276,9 @@ export async function analyze(input: string, version: number = 1, profile?: Anal
         conflict_analysis: parsed.conflict_analysis || undefined,
         version,
         created_at: new Date().toISOString(),
+        mode: parsed.mode || undefined,
+        conclusion: parsed.conclusion || '',
+        rejected_reasons: parsed.rejected_reasons || '',
       };
     } catch (err) {
       console.error('LLM call failed, falling back to simulated engine:', err);
@@ -307,6 +312,9 @@ export async function analyze(input: string, version: number = 1, profile?: Anal
     experiment: '',
     next_experiment: experiment,
     conflict_analysis: undefined,
+    mode: 'explore' as const,
+    conclusion: '',
+    rejected_reasons: '',
     version,
     created_at: new Date().toISOString(),
   };

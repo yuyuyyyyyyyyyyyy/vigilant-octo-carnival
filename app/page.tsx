@@ -357,8 +357,17 @@ export default function Home() {
                   <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
 
                   <div className="relative">
-                    <p className="text-[10px] font-mono tracking-[0.28em] text-white/20">分析报告</p>
-                    <h1 className="mt-3 text-2xl sm:text-3xl font-semibold leading-tight text-white/86">解释已展开</h1>
+                    <p className="text-[10px] font-mono tracking-[0.28em] text-white/20">
+                      分析报告
+                      {result.mode && (
+                        <span className="ml-2 inline-flex items-center gap-1 rounded-full border border-white/[0.08] bg-white/[0.03] px-2 py-0.5 text-[9px] tracking-[0.12em] text-white/35">
+                          {result.mode === 'converge' ? '收敛' : '发散'}
+                        </span>
+                      )}
+                    </p>
+                    <h1 className="mt-3 text-2xl sm:text-3xl font-semibold leading-tight text-white/86">
+                      {result.mode === 'converge' ? '判断已生成' : '解释已展开'}
+                    </h1>
                   </div>
 
                   {previousResult && (
@@ -418,7 +427,7 @@ export default function Home() {
                   <div className="premium-panel relative mt-5 p-5">
                     <p className="text-[10px] font-mono tracking-[0.18em] text-white/14">原则</p>
                     <p className="mt-3 text-[11px] leading-6 text-white/32">
-                      所有解释均可修正 · 不存在唯一结论 · 不进行人格判断 · 所有分析指向可验证行动
+                      所有解释均可修正 · 不存在唯一结论 · 不进行人格判断
                     </p>
                   </div>
 
@@ -453,9 +462,21 @@ export default function Home() {
 
                   <div className="grid gap-4">
                     {result.models.map((model, i) => (
-                      <ModelCard key={`${model.name}-${i}`} model={model} index={i} />
+                      <ModelCard key={`${model.name}-${i}`} model={model} index={i} mode={result.mode} />
                     ))}
                   </div>
+
+                  {result.mode === 'converge' && result.conclusion && (
+                    <div className="premium-panel relative p-5" style={{ borderColor: 'rgba(99,102,241,0.15)' }}>
+                      <p className="text-[10px] font-mono tracking-[0.18em] text-white/20">暂时结论</p>
+                      <p className="mt-3 text-sm leading-7 text-white/60">{result.conclusion}</p>
+                      {result.rejected_reasons && (
+                        <p className="mt-3 border-t border-white/[0.06] pt-3 text-[11px] leading-5 text-white/30">
+                          {result.rejected_reasons}
+                        </p>
+                      )}
+                    </div>
+                  )}
 
                   <div className="grid gap-4 xl:grid-cols-[0.95fr_1.05fr] items-start">
                     <VariablesList variables={result.categorized_variables || result.key_variables || result.variables} />

@@ -26,6 +26,7 @@ export default function VariablesList({ variables }: VariablesListProps) {
   if (!variables) return null;
 
   if (Array.isArray(variables)) {
+    if (variables.length === 0) return null;
     return (
       <motion.section
         initial={{ opacity: 0, y: 18 }}
@@ -52,6 +53,11 @@ export default function VariablesList({ variables }: VariablesListProps) {
   }
 
   if (isCategorized(variables)) {
+    const hasAny = CATEGORY_ORDER.some(cat => {
+      const items = (variables as any)[cat] as VariableItem[] | undefined;
+      return items && items.length > 0;
+    });
+    if (!hasAny) return null;
     return (
       <motion.section
         initial={{ opacity: 0, y: 18 }}

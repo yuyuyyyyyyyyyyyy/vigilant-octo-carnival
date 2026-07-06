@@ -16,6 +16,8 @@ export interface InterpretationModel {
   falsification?: string;
   limitation?: string;
   score: number; // 1-5
+  mechanism?: string;
+  difference_from_others?: string;
 }
 
 export interface VariableItem {
@@ -71,6 +73,9 @@ export interface AnalysisResult {
   next_experiment?: NextExperiment | string;
   version: number;
   created_at: string;
+  mode?: 'explore' | 'converge';
+  conclusion?: string;
+  rejected_reasons?: string;
 }
 
 export interface AnalyzeRequest {

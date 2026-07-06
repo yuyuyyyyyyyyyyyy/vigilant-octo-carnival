@@ -6,6 +6,7 @@ import { InterpretationModel } from '@/lib/types';
 interface ModelCardProps {
   model: InterpretationModel;
   index: number;
+  mode?: 'explore' | 'converge';
 }
 
 const STRIP_COLORS = ['#FF5A70', '#FFD36A', '#61D99B', '#62A8FF'];
@@ -20,11 +21,13 @@ function DetailBlock({ label, children }: { label: string; children?: string }) 
   );
 }
 
-export default function ModelCard({ model, index }: ModelCardProps) {
+export default function ModelCard({ model, index, mode }: ModelCardProps) {
   const color = STRIP_COLORS[index % STRIP_COLORS.length];
   const content = model.content || model.logic || model.explanation || '';
   const score = typeof model.score === 'number' ? Math.max(1, Math.min(5, model.score)) : 3;
   const hasStructuredDetails = Boolean(model.fact || model.inference || model.why || model.validation || model.falsification || model.limitation || model.evidence_quote);
+  const hasNewFields = Boolean(model.mechanism || model.difference_from_others);
+  const isConverge = mode === 'converge';
 
   return (
     <motion.article
@@ -41,6 +44,9 @@ export default function ModelCard({ model, index }: ModelCardProps) {
           <p className="flex items-center gap-2 text-[10px] font-mono tracking-[0.2em] text-white/22">
             <span className="h-2 w-2 rounded-full" style={{ background: color, boxShadow: `0 0 10px ${color}66` }} />
             解释 {String(index + 1).padStart(2, '0')}
+            {isConverge && (
+              <span className="ml-1 rounded-full border border-indigo-400/20 bg-indigo-400/[0.06] px-1.5 py-0.5 text-[8px] tracking-[0.1em] text-indigo-300/50">最优</span>
+            )}
           </p>
           <h3 className="mt-2 text-lg font-normal leading-snug text-white/82">{model.name}</h3>
           {(model.approach || model.dimension) && (
@@ -53,6 +59,13 @@ export default function ModelCard({ model, index }: ModelCardProps) {
       </div>
 
       <p className="relative mt-5 text-sm leading-7 text-white/56">{content}</p>
+
+      {hasNewFields && (
+        <div className="relative mt-4 grid gap-2 sm:grid-cols-2">
+          <DetailBlock label="机制" >{model.mechanism}</DetailBlock>
+          <DetailBlock label="与其他模型的区别" >{model.difference_from_others}</DetailBlock>
+        </div>
+      )}
 
       {model.evidence_quote && (
         <p className="relative mt-4 border-l border-white/[0.12] pl-3 text-xs leading-6 text-white/34">
